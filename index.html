@@ -1,244 +1,47 @@
-<!doctype html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#101114">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Мой баланс">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Мой баланс</title>
-<style>
-:root{color-scheme:dark;--bg:#101114;--panel:#191b21;--panel2:#20232b;--line:#2d3039;--text:#f5f6fa;--muted:#9b9eaa;--green:#9ce6bd;--red:#ff8e96;--blue:#a9c6ff;--yellow:#f2d28a;--radius:22px}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-button,input,select{font:inherit}
-button{cursor:pointer}
-.app{max-width:780px;margin:0 auto;min-height:100dvh;padding:env(safe-area-inset-top) 16px calc(100px + env(safe-area-inset-bottom))}
-header{display:flex;justify-content:space-between;align-items:center;padding:20px 2px 18px}
-.eyebrow{font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);font-weight:700}
-h1{font-size:27px;letter-spacing:-.04em;margin:5px 0 0}
-.avatar{width:44px;height:44px;border-radius:16px;background:linear-gradient(145deg,#b7f3d0,#82a8ff);display:grid;place-items:center;color:#111;font-weight:900}
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;background:#191b21;border:1px solid var(--line);border-radius:17px;padding:5px;margin-bottom:18px}
-.tab{border:0;border-radius:12px;background:transparent;color:var(--muted);padding:10px 3px;font-size:12px;font-weight:700}
-.tab.active{background:#30343e;color:var(--text)}
-.page{display:none}.page.active{display:block}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:19px;margin-bottom:13px}
-.hero{background:radial-gradient(130% 120% at 100% 0%,#304638 0%,#202a2b 40%,#191b21 78%);min-height:190px;display:flex;flex-direction:column;justify-content:space-between}
-.card-label{color:var(--muted);font-size:13px}
-.balance{font-size:clamp(30px,8vw,43px);font-weight:800;letter-spacing:-.055em;margin:10px 0 7px;overflow-wrap:anywhere}
-.small-note{font-size:12px;color:var(--muted);line-height:1.45}
-.pill{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:7px 10px;font-size:12px;font-weight:700;background:#2d3b33;color:var(--green);width:max-content}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
-.metric{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:15px;min-width:0}
-.metric .label{font-size:12px;color:var(--muted);margin-bottom:10px}
-.metric .value{font-size:clamp(17px,4.7vw,22px);font-weight:800;letter-spacing:-.03em;overflow-wrap:anywhere}
-.metric .sub{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.35}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 12px}
-h2{font-size:17px;letter-spacing:-.025em;margin:0}
-.text-btn{border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:700;padding:7px}
-.progress{height:8px;background:#30333b;border-radius:99px;overflow:hidden;margin:12px 0 8px}
-.progress span{display:block;height:100%;background:linear-gradient(90deg,#9ce6bd,#7cb8ff);border-radius:99px}
-.budget-row{margin-top:17px}
-.budget-top{display:flex;justify-content:space-between;gap:10px;font-size:13px}
-.budget-top strong{font-size:13px}
-.budget-foot{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:7px}
-.action{display:flex;gap:10px;margin:15px 0}
-.primary,.secondary{border-radius:15px;border:1px solid var(--line);padding:14px 12px;font-weight:800;font-size:13px;flex:1}
-.primary{background:var(--green);color:#102016;border-color:transparent}
-.secondary{background:var(--panel2);color:var(--text)}
-.row{display:flex;align-items:center;gap:12px}
-.dot{width:42px;height:42px;border-radius:14px;background:var(--panel2);display:grid;place-items:center;font-size:19px;flex-shrink:0}
-.transaction{display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line)}
-.transaction:last-child{border-bottom:0;padding-bottom:0}
-.tx-main{flex:1;min-width:0}.tx-name{font-weight:700;font-size:14px;overflow-wrap:anywhere}.tx-meta{color:var(--muted);font-size:11px;margin-top:5px}
-.tx-amount{font-size:14px;font-weight:800;white-space:nowrap}.positive{color:var(--green)}.negative{color:var(--red)}
-.empty{color:var(--muted);font-size:13px;padding:15px 0;line-height:1.5}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.field{display:flex;flex-direction:column;gap:7px;margin:10px 0}
-.field label{font-size:12px;color:var(--muted)}
-.field input,.field select{width:100%;border:1px solid var(--line);border-radius:13px;background:#111318;color:var(--text);padding:13px;min-width:0}
-.full{grid-column:1/-1}
-.notice{border:1px solid #554b32;background:#2b261c;border-radius:17px;padding:14px;color:#f2d28a;font-size:12px;line-height:1.5;margin-bottom:14px}
-.good{border-color:#2d5140;background:#1a2a22;color:var(--green)}
-.chart{display:flex;align-items:end;gap:7px;height:125px;padding:12px 0 2px;border-bottom:1px solid var(--line)}
-.bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:7px;min-width:0}
-.bar{width:min(100%,30px);border-radius:7px 7px 2px 2px;background:linear-gradient(180deg,#a9c6ff,#6486c7);min-height:3px}
-.bar-label{font-size:10px;color:var(--muted)}
-.settings-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.footer-note{text-align:center;color:#70737e;font-size:10px;line-height:1.5;padding:12px}
-.bottom-nav-hint{position:fixed;bottom:0;left:0;right:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(0deg,var(--bg) 75%,transparent);pointer-events:none;text-align:center;color:#737784;font-size:10px}
-.modal{position:fixed;inset:0;background:#000a;display:none;align-items:end;justify-content:center;z-index:5;padding:12px}
-.modal.open{display:flex}
-.sheet{background:var(--panel);border:1px solid var(--line);border-radius:24px 24px 18px 18px;width:100%;max-width:600px;padding:20px;max-height:90dvh;overflow:auto}
-.sheet-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.close{background:var(--panel2);border:0;color:var(--text);border-radius:12px;width:36px;height:36px;font-size:20px}
-@media(min-width:620px){.app{padding-left:24px;padding-right:24px}.hero{padding:24px}.grid2{gap:14px}.card{padding:22px}.bottom-nav-hint{display:none}}
-</style>
-</head>
-<body>
-<div class="app">
-<header><div><div class="eyebrow">Личные финансы</div><h1>Мой баланс</h1></div><div class="avatar">₸</div></header>
-<nav class="tabs" aria-label="Разделы">
-<button class="tab active" data-page="home">Обзор</button><button class="tab" data-page="ops">Операции</button><button class="tab" data-page="budget">Бюджет</button><button class="tab" data-page="settings">Настройки</button>
-</nav>
-<section class="page active" id="home">
-<div class="card hero"><div><div class="card-label">Текущий баланс</div><div class="balance" id="balance">1 400 000 ₸</div><div class="small-note">Стартовый баланс + внесённые операции</div></div><div class="pill" id="balanceStatus">● Локально на устройстве</div></div>
-<div class="grid2">
-<div class="metric"><div class="label">Доход за месяц</div><div class="value" id="incomeMonth">300 000 ₸</div><div class="sub">Текущий план дохода</div></div>
-<div class="metric"><div class="label">Расходы за месяц</div><div class="value" id="expenseMonth">1 150 000 ₸</div><div class="sub">По заданному бюджету</div></div>
-<div class="metric"><div class="label">Баланс месяца</div><div class="value negative" id="monthBalance">−850 000 ₸</div><div class="sub">Доход минус расходы</div></div>
-<div class="metric"><div class="label">Нужно зарабатывать</div><div class="value" id="neededIncome">1 200 000 ₸</div><div class="sub">С учётом цели накоплений</div></div>
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#05070c"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Мой баланс"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><title>Мой баланс</title><style>
+:root{color-scheme:dark;--bg:#05070c;--p:#0c111c;--p2:#121d30;--line:#22314a;--t:#f4f7ff;--m:#8a98af;--b:#5599ff;--b2:#2d75ee;--red:#ff7d8c}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.app{max-width:800px;margin:auto;padding:env(safe-area-inset-top) 15px 90px}header{display:flex;justify-content:space-between;align-items:center;padding:20px 2px}.eyebrow{font-size:11px;letter-spacing:.15em;color:var(--m)}h1{font-size:28px;margin:5px 0}.avatar{background:linear-gradient(135deg,#91c5ff,#2768dd);color:#06101e;border-radius:15px;padding:12px;font-weight:900}.tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:5px;background:#090e17;border:1px solid var(--line);border-radius:16px;margin-bottom:16px}.tab{background:none;border:0;color:var(--m);padding:11px 2px;border-radius:11px;font-size:11px;font-weight:750}.tab.active{background:#172d4e;color:#dceaff}.page{display:none}.page.active{display:block}.card,.metric{background:linear-gradient(145deg,#0e1522,#090d15);border:1px solid var(--line);border-radius:21px;padding:17px;margin-bottom:12px}.hero{background:radial-gradient(120% 130% at 100% 0%,#173963,#0c1525 52%,#080c14);min-height:175px;display:flex;flex-direction:column;justify-content:space-between}.muted,.label{font-size:12px;color:var(--m)}.balance{font-size:clamp(30px,8vw,43px);font-weight:850;letter-spacing:-.05em;margin:9px 0}.pill{display:inline-block;background:#122747;color:#a9ceff;padding:7px 10px;border-radius:30px;font-size:11px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.metric{margin:0;padding:14px}.metric .value{font-size:clamp(16px,4.5vw,21px);font-weight:800;overflow-wrap:anywhere;margin-top:9px}.section{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px}h2{font-size:16px;margin:0}.btn{border:1px solid var(--line);background:#111c2f;color:var(--t);border-radius:13px;padding:11px;font-weight:750;font-size:12px}.primary{background:linear-gradient(135deg,#83bdff,#347cf0);color:#06101e;border:0}.danger{color:#ff9aa6}.actions{display:flex;gap:8px;margin:10px 0}.actions button{flex:1}.item{display:flex;align-items:center;gap:9px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border:0}.ico{width:39px;height:39px;border-radius:13px;background:#142541;display:grid;place-items:center;flex-shrink:0}.main{flex:1;min-width:0}.name{font-weight:750;font-size:13px;overflow-wrap:anywhere}.meta{font-size:10px;color:var(--m);margin-top:5px}.amt{font-weight:800;font-size:12px;white-space:nowrap}.positive{color:#91c2ff}.negative{color:var(--red)}.mini{font-size:11px;color:#9ec7ff;background:#12223b;border:1px solid #29466d;border-radius:9px;padding:7px}.field{display:flex;flex-direction:column;gap:6px;margin:10px 0}.field label{font-size:11px;color:var(--m)}input,select{background:#080c14;color:var(--t);border:1px solid #263650;border-radius:11px;padding:12px;min-width:0;width:100%}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.full{grid-column:1/-1}.notice{background:#0c1b30;border:1px solid #214570;border-radius:14px;padding:12px;font-size:11px;line-height:1.5;color:#a9ceff;margin-bottom:12px}.progress{height:7px;background:#24334a;border-radius:20px;overflow:hidden;margin:10px 0}.progress span{display:block;height:100%;background:linear-gradient(90deg,#2d75ee,#91c5ff)}.empty{font-size:12px;color:var(--m);padding:12px 0;line-height:1.5}.modal{display:none;position:fixed;inset:0;background:#000b;align-items:end;justify-content:center;padding:10px;z-index:5}.modal.open{display:flex}.sheet{width:100%;max-width:600px;max-height:90dvh;overflow:auto;background:#0b111d;border:1px solid var(--line);border-radius:22px;padding:18px}.sheethead{display:flex;justify-content:space-between;align-items:center}.close{background:#17243a;color:white;border:0;border-radius:10px;padding:8px 13px}.foot{text-align:center;color:#68758a;font-size:10px;padding:14px}.chart{height:105px;display:flex;align-items:end;gap:10px}.barwrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:6px}.bar{width:28px;max-width:90%;background:linear-gradient(#91c5ff,#2869df);border-radius:7px 7px 2px 2px}.barlabel{font-size:9px;color:var(--m)}@media(min-width:600px){.app{padding-left:24px;padding-right:24px}}
+</style></head><body><div class="app">
+<header><div><div class="eyebrow">ЛИЧНЫЕ ФИНАНСЫ</div><h1>Мой баланс</h1></div><div class="avatar">₸</div></header>
+<nav class="tabs"><button class="tab active" data-page="home">Главная</button><button class="tab" data-page="accounts">Счета</button><button class="tab" data-page="expenses">Расходы</button><button class="tab" data-page="goals">Цели</button><button class="tab" data-page="settings">Ещё</button></nav>
+<section class="page active" id="home"><div class="card hero"><div><div class="muted">Общий баланс</div><div class="balance" id="total">1 400 000 ₸</div><div class="muted" id="equiv">Сумма всех счетов и наличных</div></div><div class="pill">● Хранение локально на iPhone</div></div>
+<div class="grid"><div class="metric"><div class="label">Банки</div><div class="value" id="banks">0 ₸</div></div><div class="metric"><div class="label">Наличные</div><div class="value" id="cash">1 400 000 ₸</div></div><div class="metric"><div class="label">Доходы за месяц</div><div class="value positive" id="income">0 ₸</div></div><div class="metric"><div class="label">Расходы за месяц</div><div class="value negative" id="expense">0 ₸</div></div></div>
+<div class="section"><h2>Мои счета</h2><button class="mini" data-goto="accounts">Управлять ↗</button></div><div class="card" id="homeAccounts"></div>
+<div class="section"><h2>Расходы по категориям</h2><button class="mini" data-goto="expenses">Все ↗</button></div><div class="card" id="homeCats"></div>
+<div class="section"><h2>Последние операции</h2><button class="mini" data-goto="expenses">Все ↗</button></div><div class="card" id="recent"></div><div class="actions"><button class="btn primary" id="quickExpense">＋ Расход</button><button class="btn" id="quickIncome">＋ Доход</button><button class="btn" id="quickTransfer">↔ Перевод</button></div></section>
+<section class="page" id="accounts"><div class="section"><h2>Счета и кошельки</h2><button class="btn primary" id="addAccount">＋ Добавить</button></div><div class="notice">Добавляй, редактируй и удаляй банковские счета, наличные и другие кошельки. У каждого счёта своя валюта.</div><div class="card" id="accountList"></div><div class="card"><h2>Перевод между счетами</h2><div class="field"><label>Откуда</label><select id="from"></select></div><div class="field"><label>Куда</label><select id="to"></select></div><div class="field"><label>Сумма</label><input id="transferAmount" type="number" min="0.01" step="any"></div><button class="btn primary" id="doTransfer" style="width:100%">Перевести</button></div></section>
+<section class="page" id="expenses"><div class="section"><h2>Операции и категории</h2></div><div class="actions"><button class="btn primary" id="addExpense">＋ Расход</button><button class="btn" id="addIncome">＋ Доход</button></div><div class="card"><div class="section"><h2>Категории</h2><button class="mini" id="addCategory">＋ Добавить</button></div><div id="categoryList"></div></div><div class="card"><div class="section"><h2>История операций</h2><select id="filter" style="max-width:130px"><option value="all">Все</option><option value="expense">Расходы</option><option value="income">Доходы</option><option value="transfer">Переводы</option></select></div><div id="txList"></div></div></section>
+<section class="page" id="goals"><div class="section"><h2>Финансовые цели</h2><button class="btn primary" id="addGoal">＋ Цель</button></div><div class="notice">Создавай и редактируй цели, меняй суммы и сроки, отмечай пополнения. Начальная цель — резерв $5 000.</div><div id="goalList"></div></section>
+<section class="page" id="settings"><div class="section"><h2>Валюта и данные</h2></div><div class="card"><h2>Основная валюта</h2><div class="field"><label>Валюта отображения</label><select id="baseCurrency"><option>KZT</option><option>USD</option><option>EUR</option><option>RUB</option><option>GBP</option><option>CNY</option><option>TRY</option><option>AED</option></select></div><div class="notice">Суммы счетов хранятся в их валюте, здесь меняется отображение общего баланса. Курсы справочные; обновляй онлайн или редактируй вручную.</div><div class="formgrid" id="rateFields"></div><button class="btn primary" id="saveRates" style="width:100%">Сохранить валюты и курсы</button><button class="btn" id="refreshRates" style="width:100%;margin-top:8px">↻ Обновить курсы онлайн</button><div class="meta" id="rateStatus">Курсы не являются банковской котировкой.</div></div><div class="card"><h2>Резервная копия</h2><p class="muted">Экспортируй счета, операции, категории, цели и курсы. Сохрани файл отдельно.</p><div class="actions"><button class="btn" id="export">Экспорт</button><button class="btn" id="importBtn">Импорт</button></div><input id="importFile" type="file" accept="application/json" hidden><button class="btn danger" id="reset" style="width:100%">Сбросить все данные</button></div><div class="foot">Данные не отправляются на сервер. Онлайн-курс запрашивается только по кнопке.</div></section>
 </div>
-<div class="section-title"><h2>План на месяц</h2><button class="text-btn" data-goto="budget">Подробнее ↗</button></div>
-<div class="card">
-<div class="budget-row"><div class="budget-top"><span>Еда</span><strong id="foodPlan">600 000 ₸</strong></div><div class="progress"><span id="foodBar" style="width:52%"></span></div><div class="budget-foot"><span>20 000 ₸ в день</span><span>30 дней</span></div></div>
-<div class="budget-row"><div class="budget-top"><span>Прочие ежедневные расходы</span><strong id="dailyPlan">450 000 ₸</strong></div><div class="progress"><span id="dailyBar" style="width:39%"></span></div><div class="budget-foot"><span>15 000 ₸ в день</span><span>30 дней</span></div></div>
-<div class="budget-row"><div class="budget-top"><span>Прочие ежемесячные расходы</span><strong id="otherPlan">100 000 ₸</strong></div><div class="progress"><span id="otherBar" style="width:9%"></span></div><div class="budget-foot"><span>Фиксированная сумма</span><span>В месяц</span></div></div>
-</div>
-<div id="warning" class="notice">При текущих цифрах расходы превышают доход. Чтобы не уменьшать баланс, нужно увеличить доход или снизить расходы.</div>
-<div class="section-title"><h2>Последние операции</h2><button class="text-btn" data-goto="ops">Все ↗</button></div>
-<div class="card" id="recent"><div class="empty">Пока операций нет. Добавь доход или расход — баланс пересчитается автоматически.</div></div>
-<div class="action"><button class="primary" id="quickExpense">＋ Добавить расход</button><button class="secondary" id="quickIncome">＋ Добавить доход</button></div>
-</section>
-<section class="page" id="ops">
-<div class="section-title" style="margin-top:4px"><h2>История операций</h2><span class="small-note" id="txCount">0 записей</span></div>
-<div class="action"><button class="primary" id="addExpense">＋ Расход</button><button class="secondary" id="addIncome">＋ Доход</button></div>
-<div class="card" id="allTransactions"><div class="empty">Записей пока нет. Добавь первую операцию.</div></div>
-<div class="footer-note">Операции сохраняются только в браузере этого устройства.</div>
-</section>
-<section class="page" id="budget">
-<div class="section-title" style="margin-top:4px"><h2>Бюджет и цели</h2></div>
-<div class="grid2">
-<div class="metric"><div class="label">Цель резерва</div><div class="value" id="reserveGoal">$5 000</div><div class="sub" id="reserveKzt">≈ 2 269 650 ₸</div></div>
-<div class="metric"><div class="label">Прогресс резерва</div><div class="value" id="reserveProgress">61,7%</div><div class="sub" id="reserveGap">Осталось 869 650 ₸</div></div>
-</div>
-<div class="card" style="margin-top:13px"><div class="card-label">Путь к резерву</div><div class="progress" style="height:12px"><span id="reserveBar" style="width:61.7%"></span></div><div class="budget-foot"><span id="reserveCurrent">1 400 000 ₸ сейчас</span><span id="reserveTarget">2 269 650 ₸ цель</span></div></div>
-<div class="section-title"><h2>Распределение месячных расходов</h2></div>
-<div class="card">
-<div class="chart" id="expenseChart"></div>
-<div class="small-note" style="margin-top:12px">План рассчитан на условный 30-дневный месяц. Меняй цифры в настройках под реальные расходы.</div>
-</div>
-<div class="card">
-<div class="section-title" style="margin:0 0 12px"><h2>Недельный ориентир</h2></div>
-<div class="grid2">
-<div><div class="card-label">Минимальный доход</div><div class="value" style="font-size:21px;font-weight:800;margin-top:7px" id="weekNeed">280 000 ₸</div></div>
-<div><div class="card-label">Дневной ориентир</div><div class="value" style="font-size:21px;font-weight:800;margin-top:7px" id="dayNeed">40 000 ₸</div></div>
-</div>
-</div>
-</section>
-<section class="page" id="settings">
-<div class="section-title" style="margin-top:4px"><h2>Твои настройки</h2></div>
-<div class="notice">Начальные значения взяты из твоих цифр. Изменение бюджета обновит расчёты, но не удалит историю операций.</div>
-<div class="card">
-<div class="field"><label for="startBalance">Стартовый баланс, ₸</label><input id="startBalance" type="number" min="0" step="1000"></div>
-<div class="field"><label for="monthlyIncome">План дохода в месяц, ₸</label><input id="monthlyIncome" type="number" min="0" step="1000"></div>
-<div class="form-grid">
-<div class="field"><label for="foodDaily">Еда в день, ₸</label><input id="foodDaily" type="number" min="0" step="500"></div>
-<div class="field"><label for="dailyOther">Прочее в день, ₸</label><input id="dailyOther" type="number" min="0" step="500"></div>
-<div class="field"><label for="monthlyOther">Прочее в месяц, ₸</label><input id="monthlyOther" type="number" min="0" step="1000"></div>
-<div class="field"><label for="monthlySaving">Накопления в месяц, ₸</label><input id="monthlySaving" type="number" min="0" step="1000"></div>
-<div class="field"><label for="usdRate">Курс USD/KZT</label><input id="usdRate" type="number" min="1" step="0.01"></div>
-<div class="field"><label for="reserveUsd">Цель резерва, $</label><input id="reserveUsd" type="number" min="0" step="100"></div>
-</div>
-<button class="primary" style="width:100%;margin-top:10px" id="saveSettings">Сохранить настройки</button>
-</div>
-<div class="card">
-<h2 style="margin-bottom:10px">Резервная копия</h2>
-<p class="small-note">Экспортируй файл с настройками и операциями, чтобы сохранить копию. При переустановке браузера данные могут исчезнуть.</p>
-<div class="settings-actions" style="margin-top:14px"><button class="secondary" id="exportData">Экспорт данных</button><button class="secondary" id="importButton">Импорт данных</button></div>
-<input id="importFile" type="file" accept="application/json,.json" hidden>
-<button class="secondary" id="resetData" style="width:100%;margin-top:10px;color:var(--red)">Сбросить все данные</button>
-</div>
-<div class="footer-note">Мой баланс · офлайн-планировщик · данные не отправляются на сервер.</div>
-</section>
-</div>
-<div class="bottom-nav-hint">Проведи по разделам с помощью меню выше</div>
-<div class="modal" id="txModal" role="dialog" aria-modal="true">
-<div class="sheet">
-<div class="sheet-head"><h2 id="modalTitle">Новая операция</h2><button class="close" id="closeModal" aria-label="Закрыть">×</button></div>
-<form id="txForm">
-<input id="txType" type="hidden" value="expense">
-<div class="field"><label for="txName">Название</label><input id="txName" required maxlength="70" placeholder="Например, продукты"></div>
-<div class="form-grid">
-<div class="field"><label for="txAmount">Сумма, ₸</label><input id="txAmount" type="number" required min="1" step="1" placeholder="5000"></div>
-<div class="field"><label for="txDate">Дата</label><input id="txDate" type="date" required></div>
-<div class="field full"><label for="txCategory">Категория</label><select id="txCategory"><option>Еда</option><option>Транспорт</option><option>Покупки</option><option>Счета</option><option>Здоровье</option><option>Развлечения</option><option>Зарплата</option><option>Подработка</option><option>Другое</option></select></div>
-</div>
-<button class="primary" style="width:100%;margin-top:12px" type="submit">Сохранить операцию</button>
-</form>
-</div>
-</div>
+<div class="modal" id="modal"><div class="sheet"><div class="sheethead"><h2 id="modalTitle">Добавить</h2><button class="close" id="close">×</button></div><form id="form"><div id="fields"></div><button class="btn primary" type="submit" style="width:100%;margin-top:10px">Сохранить</button></form></div></div>
 <script>
-const defaults={startBalance:1400000,monthlyIncome:300000,foodDaily:20000,dailyOther:15000,monthlyOther:100000,monthlySaving:50000,usdRate:453.93,reserveUsd:5000,transactions:[]};
-let data;
-try{data=JSON.parse(localStorage.getItem('myBalanceData')||'null')}catch(e){data=null}
-if(!data||typeof data!=='object')data=structuredClone(defaults);
-data={...defaults,...data,transactions:Array.isArray(data.transactions)?data.transactions:[]};
-const $=id=>document.getElementById(id);
-const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Math.round(n))+' ₸';
-const signed=n=>(n<0?'−':'+')+money(Math.abs(n));
-const today=()=>new Date().toISOString().slice(0,10);
-function persist(){localStorage.setItem('myBalanceData',JSON.stringify(data));render()}
-function monthlyExpenses(){return data.foodDaily*30+data.dailyOther*30+data.monthlyOther}
-function currentBalance(){return data.startBalance+data.transactions.reduce((s,t)=>s+(t.type==='income'?1:-1)*Number(t.amount),0)}
-function monthTransactions(){const d=new Date();return data.transactions.filter(t=>{const x=new Date(t.date+'T12:00:00');return x.getMonth()===d.getMonth()&&x.getFullYear()===d.getFullYear()})}
-function render(){
- const expenses=monthlyExpenses(),needed=expenses+data.monthlySaving,monthTx=monthTransactions();
- const incomeActual=monthTx.filter(t=>t.type==='income').reduce((s,t)=>s+Number(t.amount),0);
- const expenseActual=monthTx.filter(t=>t.type==='expense').reduce((s,t)=>s+Number(t.amount),0);
- $('balance').textContent=money(currentBalance());
- $('incomeMonth').textContent=money(data.monthlyIncome);
- $('expenseMonth').textContent=money(expenses);
- $('monthBalance').textContent=(data.monthlyIncome-expenses<0?'−':'')+money(Math.abs(data.monthlyIncome-expenses));
- $('monthBalance').className='value '+(data.monthlyIncome-expenses<0?'negative':'positive');
- $('neededIncome').textContent=money(needed);
- $('foodPlan').textContent=money(data.foodDaily*30);
- $('dailyPlan').textContent=money(data.dailyOther*30);
- $('otherPlan').textContent=money(data.monthlyOther);
- const sums=[data.foodDaily*30,data.dailyOther*30,data.monthlyOther],max=Math.max(...sums,1);
- ['foodBar','dailyBar','otherBar'].forEach((id,i)=>$(id).style.width=(sums[i]/max*100)+'%');
- $('warning').className='notice'+(data.monthlyIncome>=needed?' good':'');
- $('warning').textContent=data.monthlyIncome>=needed?'Плановый доход покрывает расходы и цель накоплений. Следи за фактическими операциями, чтобы видеть реальную картину.':`Дохода по плану не хватает на ${money(needed-data.monthlyIncome)} в месяц, если сохранить текущие расходы и накопления.`;
- const reserve=data.reserveUsd*data.usdRate,bal=Math.max(0,currentBalance()),pct=reserve>0?Math.min(100,bal/reserve*100):100;
- $('reserveGoal').textContent='$'+moneyPlain(data.reserveUsd);
- $('reserveKzt').textContent='≈ '+money(reserve);
- $('reserveProgress').textContent=pct.toLocaleString('ru-RU',{maximumFractionDigits:1})+'%';
- $('reserveGap').textContent=bal>=reserve?'Цель достигнута':'Осталось '+money(Math.max(0,reserve-bal));
- $('reserveBar').style.width=pct+'%';$('reserveCurrent').textContent=money(bal)+' сейчас';$('reserveTarget').textContent=money(reserve)+' цель';
- $('weekNeed').textContent=money(needed/30*7);$('dayNeed').textContent=money(needed/30);
- const sorted=[...data.transactions].sort((a,b)=>(b.date||'').localeCompare(a.date||'')||(b.id||0)-(a.id||0));
- $('txCount').textContent=sorted.length+' '+plural(sorted.length,['запись','записи','записей']);
- $('recent').innerHTML=sorted.length?sorted.slice(0,4).map(txHTML).join(''):'<div class="empty">Пока операций нет. Добавь доход или расход — баланс пересчитается автоматически.</div>';
- $('allTransactions').innerHTML=sorted.length?sorted.map(txHTML).join(''):'<div class="empty">Записей пока нет. Добавь первую операцию.</div>';
- const chart=$('expenseChart');chart.innerHTML='';
- const labels=['Еда','Прочее/день','Прочее/мес'];
- sums.forEach((v,i)=>{const w=document.createElement('div');w.className='bar-wrap';const b=document.createElement('div');b.className='bar';b.style.height=(v/max*82+4)+'%';b.title=money(v);const l=document.createElement('div');l.className='bar-label';l.textContent=labels[i];w.append(b,l);chart.append(w)});
+const DEF={baseCurrency:'KZT',rates:{KZT:1,USD:453.93,EUR:495,RUB:5.1,GBP:590,CNY:63,TRY:13.8,AED:123.6},accounts:[{id:'cash',name:'Наличные',type:'cash',currency:'KZT',balance:1400000,icon:'💵'}],categories:[{id:'food',name:'Еда',icon:'🍽️',type:'expense'},{id:'transport',name:'Транспорт',icon:'🚕',type:'expense'},{id:'shopping',name:'Покупки',icon:'🛍️',type:'expense'},{id:'bills',name:'Счета и связь',icon:'🧾',type:'expense'},{id:'health',name:'Здоровье',icon:'✚',type:'expense'},{id:'fun',name:'Развлечения',icon:'🎮',type:'expense'},{id:'other-e',name:'Другое',icon:'•',type:'expense'},{id:'salary',name:'Зарплата',icon:'💼',type:'income'},{id:'side',name:'Подработка',icon:'⚡',type:'income'},{id:'other-i',name:'Другой доход',icon:'＋',type:'income'}],goals:[{id:'reserve',name:'Резерв $5 000',target:2269650,saved:0,currency:'KZT',due:'',icon:'🛡️',note:'Финансовая подушка'}],transactions:[]};
+let d;try{d=JSON.parse(localStorage.getItem('moyBalanceV2')||'null')}catch(e){}if(!d||!Array.isArray(d.accounts))d=structuredClone(DEF);d={...structuredClone(DEF),...d,rates:{...DEF.rates,...(d.rates||{})},accounts:d.accounts||[],categories:d.categories||[],goals:d.goals||[],transactions:d.transactions||[]};
+const $=id=>document.getElementById(id),cur={KZT:'₸',USD:'$',EUR:'€',RUB:'₽',GBP:'£',CNY:'¥',TRY:'₺',AED:'د.إ'},uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=(n,c=d.baseCurrency)=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:c,maximumFractionDigits:['KZT','RUB'].includes(c)?0:2}).format(Number(n)||0),num=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:2}).format(n||0),rate=c=>Number(d.rates[c]||1),kzt=(n,c)=>Number(n||0)*rate(c),display=n=>n/rate(d.baseCurrency),save=()=>{localStorage.setItem('moyBalanceV2',JSON.stringify(d));render()},account=id=>d.accounts.find(a=>a.id===id),category=id=>d.categories.find(c=>c.id===id),today=()=>new Date().toISOString().slice(0,10);
+function options(items,val){return items.map(x=>`<option value="${esc(x.value)}" ${x.value===val?'selected':''}>${esc(x.label)}</option>`).join('')}
+function selectField(label,name,items,val){return `<div class="field"><label>${label}</label><select name="${name}">${options(items,val)}</select></div>`}
+function field(label,name,val='',type='text',extra=''){return `<div class="field"><label>${label}</label><input name="${name}" type="${type}" value="${esc(val)}" ${extra}></div>`}
+function txhtml(t){let a=account(t.accountId),c=category(t.categoryId),symbol=cur[t.currency||a?.currency||'KZT']||'',sign=t.type==='income'?'+':t.type==='expense'?'−':'↔';return `<div class="item"><div class="ico">${t.type==='transfer'?'↔':esc(c?.icon||'•')}</div><div class="main"><div class="name">${esc(t.name)}</div><div class="meta">${esc(c?.name||'Перевод')} · ${esc(t.date||'')} ${a?'· '+esc(a.name):''}</div></div><div class="amt ${t.type==='income'?'positive':t.type==='expense'?'negative':''}">${sign}${num(t.amount)} ${symbol}</div>${t.type!=='transfer'?`<button class="mini" onclick="editTx('${t.id}')">✎</button>`:''}<button class="mini" onclick="delTx('${t.id}')">×</button></div>`}
+function render(){let total=d.accounts.reduce((s,a)=>s+kzt(a.balance,a.currency),0),banks=d.accounts.filter(a=>a.type!=='cash').reduce((s,a)=>s+kzt(a.balance,a.currency),0),cash=d.accounts.filter(a=>a.type==='cash').reduce((s,a)=>s+kzt(a.balance,a.currency),0),mt=d.transactions.filter(t=>(t.date||'').slice(0,7)===today().slice(0,7)),inc=mt.filter(t=>t.type==='income').reduce((s,t)=>s+kzt(t.amount,account(t.accountId)?.currency||'KZT'),0),out=mt.filter(t=>t.type==='expense').reduce((s,t)=>s+kzt(t.amount,account(t.accountId)?.currency||'KZT'),0);
+$('total').textContent=fmt(display(total));$('equiv').textContent='≈ '+fmt(total,'KZT')+' по сохранённым курсам';$('banks').textContent=fmt(display(banks));$('cash').textContent=fmt(display(cash));$('income').textContent=fmt(display(inc));$('expense').textContent=fmt(display(out));
+let acchtml=d.accounts.map(a=>`<div class="item"><div class="ico">${esc(a.icon||'🏦')}</div><div class="main"><div class="name">${esc(a.name)}</div><div class="meta">${a.type==='cash'?'Наличные':a.type==='bank'?'Банк':'Другой счёт'} · ${a.currency}</div></div><div class="amt">${fmt(a.balance,a.currency)}</div><button class="mini" onclick="editAccount('${a.id}')">✎</button><button class="mini" onclick="delAccount('${a.id}')">×</button></div>`).join('')||'<div class="empty">Добавь первый счёт.</div>';$('homeAccounts').innerHTML=$('accountList').innerHTML=acchtml;
+let cats=d.categories.filter(c=>c.type==='expense').map(c=>({...c,sum:mt.filter(t=>t.type==='expense'&&t.categoryId===c.id).reduce((s,t)=>s+kzt(t.amount,account(t.accountId)?.currency||'KZT'),0)})).filter(c=>c.sum>0).sort((a,b)=>b.sum-a.sum);$('homeCats').innerHTML=cats.length?cats.slice(0,6).map(c=>`<div class="item"><div class="ico">${esc(c.icon)}</div><div class="main"><div class="name">${esc(c.name)}</div><div class="progress"><span style="width:${Math.max(4,c.sum/Math.max(...cats.map(x=>x.sum))*100)}%"></span></div></div><div class="amt">${fmt(display(c.sum))}</div></div>`).join(''):'<div class="empty">Добавляй расходы, и здесь появится статистика по категориям.</div>';
+let sorted=[...d.transactions].sort((a,b)=>(b.date||'').localeCompare(a.date||''));$('recent').innerHTML=sorted.slice(0,4).map(txhtml).join('')||'<div class="empty">Операций пока нет.</div>';let f=$('filter').value;$('txList').innerHTML=sorted.filter(t=>f==='all'||t.type===f).map(txhtml).join('')||'<div class="empty">Операций нет.</div>';
+$('categoryList').innerHTML=d.categories.map(c=>`<div class="item"><div class="ico">${esc(c.icon)}</div><div class="main"><div class="name">${esc(c.name)}</div><div class="meta">${c.type==='income'?'Доходы':'Расходы'}</div></div><button class="mini" onclick="editCategory('${c.id}')">✎</button><button class="mini" onclick="delCategory('${c.id}')">×</button></div>`).join('');
+$('goalList').innerHTML=d.goals.map(g=>{let p=Math.min(100,100*g.saved/Math.max(1,g.target));return `<div class="card"><div class="item"><div class="ico">${esc(g.icon||'🎯')}</div><div class="main"><div class="name">${esc(g.name)}</div><div class="meta">${esc(g.note||'Цель накоплений')}${g.due?' · до '+esc(g.due):''}</div></div><button class="mini" onclick="editGoal('${g.id}')">✎</button><button class="mini" onclick="delGoal('${g.id}')">×</button></div><div class="item"><strong>${fmt(g.saved,g.currency)}</strong><span class="muted">из ${fmt(g.target,g.currency)}</span><button class="mini" onclick="contribute('${g.id}')">＋ Пополнить</button></div><div class="progress"><span style="width:${p}%"></span></div><div class="meta">${p.toFixed(1)}% накоплено</div></div>`}).join('')||'<div class="card empty">Добавь финансовую цель.</div>';
+$('from').innerHTML=options(d.accounts.map(a=>({value:a.id,label:a.name+' · '+a.currency})),d.accounts[0]?.id);$('to').innerHTML=options(d.accounts.map(a=>({value:a.id,label:a.name+' · '+a.currency})),d.accounts[1]?.id);$('to').disabled=d.accounts.length<2;$('baseCurrency').value=d.baseCurrency;
+$('rateFields').innerHTML=['USD','EUR','RUB','GBP','CNY','TRY','AED'].map(c=>`<div class="field"><label>${c} → KZT</label><input id="rate${c}" type="number" min="0.0001" step="any" value="${d.rates[c]}"></div>`).join('');
 }
-function moneyPlain(n){return new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(n)}
-function plural(n,forms){const n10=n%10,n100=n%100;return n100>=11&&n100<=14?forms[2]:n10===1?forms[0]:n10>=2&&n10<=4?forms[1]:forms[2]}
-function txHTML(t){return `<div class="transaction"><div class="dot">${t.type==='income'?'↙':'↗'}</div><div class="tx-main"><div class="tx-name">${escapeHTML(t.name)}</div><div class="tx-meta">${escapeHTML(t.category||'Другое')} · ${escapeHTML(t.date||'')}</div></div><div class="tx-amount ${t.type==='income'?'positive':'negative'}">${t.type==='income'?'+':'−'}${moneyPlain(t.amount)} ₸</div><button class="text-btn" title="Удалить операцию" aria-label="Удалить операцию" onclick="deleteTx('${String(t.id).replace(/'/g,'')}')">×</button></div>`}
-function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-window.deleteTx=id=>{if(confirm('Удалить эту операцию?')){data.transactions=data.transactions.filter(t=>String(t.id)!==String(id));persist()}}
-function showPage(page){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===page));document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===page));window.scrollTo({top:0,behavior:'smooth'})}
-document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
-document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.goto)));
-function openModal(type){$('txType').value=type;$('modalTitle').textContent=type==='income'?'Добавить доход':'Добавить расход';$('txName').value='';$('txAmount').value='';$('txDate').value=today();$('txCategory').value=type==='income'?'Зарплата':'Еда';$('txModal').classList.add('open');setTimeout(()=>$('txName').focus(),100)}
-['quickExpense','addExpense'].forEach(id=>$(id).addEventListener('click',()=>openModal('expense')));
-['quickIncome','addIncome'].forEach(id=>$(id).addEventListener('click',()=>openModal('income')));
-$('closeModal').addEventListener('click',()=>$('txModal').classList.remove('open'));
-$('txModal').addEventListener('click',e=>{if(e.target===$('txModal'))$('txModal').classList.remove('open')});
-$('txForm').addEventListener('submit',e=>{e.preventDefault();const amount=Number($('txAmount').value);if(!Number.isFinite(amount)||amount<=0)return;data.transactions.push({id:Date.now().toString(),type:$('txType').value,name:$('txName').value.trim(),amount,date:$('txDate').value,category:$('txCategory').value});$('txModal').classList.remove('open');persist()});
-function fillSettings(){['startBalance','monthlyIncome','foodDaily','dailyOther','monthlyOther','monthlySaving','usdRate','reserveUsd'].forEach(k=>$(k).value=data[k])}
-$('saveSettings').addEventListener('click',()=>{['startBalance','monthlyIncome','foodDaily','dailyOther','monthlyOther','monthlySaving','usdRate','reserveUsd'].forEach(k=>{const n=Number($(k).value);if(Number.isFinite(n)&&n>=0)data[k]=n});persist();alert('Настройки сохранены')});
-$('exportData').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='moy-balans-backup.json';a.click();URL.revokeObjectURL(a.href)});
-$('importButton').addEventListener('click',()=>$('importFile').click());
-$('importFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{const incoming=JSON.parse(await f.text());if(!incoming||!Array.isArray(incoming.transactions))throw new Error('bad');data={...defaults,...incoming,transactions:incoming.transactions};persist();fillSettings();alert('Данные импортированы')}catch(err){alert('Не удалось прочитать файл резервной копии')}e.target.value=''});
-$('resetData').addEventListener('click',()=>{if(confirm('Удалить настройки и все операции? Сначала экспортируй резервную копию, если она нужна.')){data=structuredClone(defaults);persist();fillSettings()}});
-fillSettings();render();
-if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script>
-</body>
-</html>
+function page(p){document.querySelectorAll('.page').forEach(x=>x.classList.toggle('active',x.id===p));document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.page===p));scrollTo(0,0)}document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>page(b.dataset.page));document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>page(b.dataset.goto));$('filter').onchange=render;
+let handler=null;function modal(title,body,fn){$('modalTitle').textContent=title;$('fields').innerHTML=body;handler=fn;$('modal').classList.add('open')}function close(){ $('modal').classList.remove('open');handler=null }$('close').onclick=close;$('modal').onclick=e=>{if(e.target===$('modal'))close()};$('form').onsubmit=e=>{e.preventDefault();handler?.(new FormData(e.target))};
+function accountForm(a){a=a||{name:'',type:'bank',currency:'KZT',balance:0,icon:'🏦'};modal(a.id?'Редактировать счёт':'Новый счёт',field('Название','name',a.name,'text','required maxlength="50"')+`<div class="formgrid">${selectField('Тип','type',[{value:'bank',label:'Банк'},{value:'cash',label:'Наличные'},{value:'other',label:'Другой'}],a.type)}${selectField('Валюта','currency',Object.keys(cur).map(c=>({value:c,label:c+' '+cur[c]})),a.currency)}${field('Остаток','balance',a.balance,'number','min="0" step="any" required')}${field('Иконка','icon',a.icon||'🏦')}</div>`,fd=>{let b={id:a.id||uid(),name:fd.get('name').trim(),type:fd.get('type'),currency:fd.get('currency'),balance:Number(fd.get('balance')),icon:fd.get('icon')||'🏦'};if(!b.name||b.balance<0)return alert('Проверь название и баланс');if(a.id)Object.assign(account(a.id),b);else d.accounts.push(b);close();save()})}
+$('addAccount').onclick=()=>accountForm();window.editAccount=id=>accountForm(account(id));window.delAccount=id=>{if(d.transactions.some(t=>t.accountId===id||t.fromId===id||t.toId===id))return alert('Счёт связан с историей операций. Сначала удали связанные операции.');if(confirm('Удалить счёт?')){d.accounts=d.accounts.filter(a=>a.id!==id);save()}};
+function txForm(type,t){if(!d.accounts.length)return alert('Сначала создай счёт');t=t||{name:'',amount:'',date:today(),accountId:d.accounts[0].id,categoryId:d.categories.find(c=>c.type===type)?.id};let cats=d.categories.filter(c=>c.type===type);modal(t.id?'Редактировать операцию':type==='income'?'Добавить доход':'Добавить расход',field('Название','name',t.name,'text','required')+`<div class="formgrid">${field('Сумма','amount',t.amount,'number','min="0.01" step="any" required')}${field('Дата','date',t.date,'date','required')}${selectField('Счёт','accountId',d.accounts.map(a=>({value:a.id,label:a.name+' ('+a.currency+')'})),t.accountId)}${selectField('Категория','categoryId',cats.map(c=>({value:c.id,label:c.icon+' '+c.name})),t.categoryId)}</div>`,fd=>{let amount=Number(fd.get('amount')),a=account(fd.get('accountId'));if(!amount||amount<=0)return alert('Введи сумму больше нуля');let tx={id:t.id||uid(),type,name:fd.get('name').trim(),amount,date:fd.get('date'),accountId:a.id,categoryId:fd.get('categoryId')};if(t.id){let old=d.transactions.find(x=>x.id===t.id);if(old){let oldA=account(old.accountId);if(oldA)oldA.balance+=(old.type==='income'?-1:1)*old.amount}}if(type==='income')a.balance+=amount;else a.balance-=amount;if(t.id)d.transactions[d.transactions.findIndex(x=>x.id===t.id)]=tx;else d.transactions.push(tx);close();save()})}
+$('quickExpense').onclick=$('addExpense').onclick=()=>txForm('expense');$('quickIncome').onclick=$('addIncome').onclick=()=>txForm('income');$('quickTransfer').onclick=()=>{page('accounts');$('transferAmount').focus()};window.editTx=id=>{let t=d.transactions.find(t=>t.id===id);if(t&&t.type!=='transfer')txForm(t.type,t)};window.delTx=id=>{let t=d.transactions.find(t=>t.id===id);if(!t||!confirm('Удалить операцию?'))return;if(t.type==='transfer'){let a=account(t.fromId),b=account(t.toId);if(a)a.balance+=t.amount;if(b)b.balance-=t.toAmount}else{let a=account(t.accountId);if(a)a.balance+=(t.type==='income'?-1:1)*t.amount}d.transactions=d.transactions.filter(t=>t.id!==id);save()};
+$('doTransfer').onclick=()=>{let a=account($('from').value),b=account($('to').value),v=Number($('transferAmount').value);if(!a||!b||a.id===b.id)return alert('Выбери два разных счёта');if(!v||v<=0||v>a.balance)return alert('Проверь сумму и остаток отправителя');let target=kzt(v,a.currency)/rate(b.currency);a.balance-=v;b.balance+=target;d.transactions.push({id:uid(),type:'transfer',name:'Перевод между счетами',amount:v,currency:a.currency,toAmount:target,fromId:a.id,toId:b.id,fromName:a.name,toName:b.name,date:today()});$('transferAmount').value='';save();alert('Перевод выполнен по сохранённому курсу')};
+function catForm(c){c=c||{name:'',icon:'•',type:'expense'};modal(c.id?'Редактировать категорию':'Новая категория',field('Название','name',c.name,'text','required')+`<div class="formgrid">${field('Иконка / emoji','icon',c.icon)}${selectField('Тип','type',[{value:'expense',label:'Расходы'},{value:'income',label:'Доходы'}],c.type)}</div>`,fd=>{let x={id:c.id||uid(),name:fd.get('name').trim(),icon:fd.get('icon')||'•',type:fd.get('type')};if(c.id)Object.assign(category(c.id),x);else d.categories.push(x);close();save()})}$('addCategory').onclick=()=>catForm();window.editCategory=id=>catForm(category(id));window.delCategory=id=>{if(d.transactions.some(t=>t.categoryId===id))return alert('Категория используется в истории операций. Сначала удали или измени эти операции.');if(confirm('Удалить категорию?')){d.categories=d.categories.filter(c=>c.id!==id);save()}};
+function goalForm(g){g=g||{name:'',target:100000,saved:0,currency:'KZT',due:'',icon:'🎯',note:''};modal(g.id?'Редактировать цель':'Новая цель',field('Название','name',g.name,'text','required')+`<div class="formgrid">${field('Целевая сумма','target',g.target,'number','min="0.01" step="any" required')}${field('Уже накоплено','saved',g.saved,'number','min="0" step="any" required')}${selectField('Валюта','currency',Object.keys(cur).map(c=>({value:c,label:c})),g.currency)}${field('Срок','due',g.due||'','date')}${field('Иконка','icon',g.icon||'🎯')}</div>`+field('Заметка','note',g.note||''),fd=>{let x={id:g.id||uid(),name:fd.get('name').trim(),target:Number(fd.get('target')),saved:Number(fd.get('saved')),currency:fd.get('currency'),due:fd.get('due'),icon:fd.get('icon')||'🎯',note:fd.get('note')};if(x.target<=0||x.saved<0)return alert('Проверь суммы');if(g.id)Object.assign(d.goals.find(x=>x.id===g.id),x);else d.goals.push(x);close();save()})}$('addGoal').onclick=()=>goalForm();window.editGoal=id=>goalForm(d.goals.find(g=>g.id===id));window.delGoal=id=>{if(confirm('Удалить цель?')){d.goals=d.goals.filter(g=>g.id!==id);save()}};window.contribute=id=>{let g=d.goals.find(g=>g.id===id),v=Number(prompt('Сумма пополнения ('+g.currency+')','10000'));if(v>0){g.saved+=v;save()}};
+$('saveRates').onclick=()=>{d.baseCurrency=$('baseCurrency').value;Object.keys(cur).forEach(c=>{let el=$('rate'+c);if(el&&Number(el.value)>0)d.rates[c]=Number(el.value)});save();alert('Настройки валют сохранены')};$('refreshRates').onclick=async()=>{let s=$('rateStatus');s.textContent='Получаю курсы…';try{let r=await fetch('https://open.er-api.com/v6/latest/KZT',{cache:'no-store'}),j=await r.json();if(j.result!=='success')throw 0;['USD','EUR','RUB','GBP','CNY','TRY','AED'].forEach(c=>{if(j.rates[c]>0)d.rates[c]=1/j.rates[c]});save();s.textContent='Обновлено: '+j.time_last_update_utc+' (справочный курс)'}catch(e){s.textContent='Онлайн-курс недоступен. Введи курс вручную.';alert('Не получилось обновить курсы. Старые значения сохранены.')}};
+$('export').onclick=()=>{let a=document.createElement('a'),u=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));a.href=u;a.download='moy-balans-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)};$('importBtn').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{try{let x=JSON.parse(await e.target.files[0].text());if(!Array.isArray(x.accounts)||!Array.isArray(x.transactions))throw 0;d={...structuredClone(DEF),...x,rates:{...DEF.rates,...x.rates}};save();alert('Импортировано')}catch(e){alert('Не удалось импортировать файл')}e.target.value=''};$('reset').onclick=()=>{if(confirm('Удалить все данные? Сначала сделай экспорт.')){d=structuredClone(DEF);save()}};
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});render();
+</script></body></html>

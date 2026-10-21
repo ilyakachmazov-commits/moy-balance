@@ -1,12 +1,11 @@
 {
   "name": "Мой баланс — личные финансы",
   "short_name": "Мой баланс",
-  "description": "Личный финансовый планировщик с локальным хранением данных",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#101114",
-  "theme_color": "#101114",
+  "background_color": "#05070c",
+  "theme_color": "#05070c",
   "icons": [
     {
       "src": "icon.svg",
